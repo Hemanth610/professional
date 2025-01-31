@@ -1,4 +1,5 @@
 export interface Recipe {
+  isSpecial: any;
   id: string;
   title: string;
   description: string;

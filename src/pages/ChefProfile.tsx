@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+
 import { Chef } from '../types/chef';
 import { Recipe } from '../types/recipe';
 import { useAuthStore } from '../store/useAuthStore';
