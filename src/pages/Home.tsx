@@ -40,7 +40,7 @@ const FEATURED_RECIPES = [
     cookingTime: 40,
     servings: 4,
     difficulty: 'easy',
-    imageUrl: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1589647363585-f4a7d3877b10?q=80&w=1472&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     cuisine: 'North Indian'
   },
   {
