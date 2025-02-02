@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Star, StarOff } from 'lucide-react';
-import { supabase } from '../lib/supabase';
-import { useAuthStore } from '../store/useAuthStore';
 
 interface Comment {
   id: string;
@@ -19,7 +17,7 @@ interface Props {
 }
 
 const RecipeComments = ({ recipeId }: Props) => {
-  const { user } = useAuthStore();
+  const user = { id: 'user123', username: 'Guest' }; // Mock user (replace with real auth logic)
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [rating, setRating] = useState(5);
@@ -29,46 +27,33 @@ const RecipeComments = ({ recipeId }: Props) => {
     loadComments();
   }, [recipeId]);
 
-  const loadComments = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('comments')
-        .select(`
-          *,
-          user:profiles(username)
-        `)
-        .eq('recipe_id', recipeId)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setComments(data || []);
-    } catch (error) {
-      console.error('Error loading comments:', error);
-    } finally {
-      setLoading(false);
-    }
+  // Load comments from local state
+  const loadComments = () => {
+    const storedComments = localStorage.getItem(`comments-${recipeId}`);
+    setComments(storedComments ? JSON.parse(storedComments) : []);
+    setLoading(false);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Handle posting a new comment
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
 
-    try {
-      const { error } = await supabase.from('comments').insert({
-        recipe_id: recipeId,
-        user_id: user.id,
-        content: newComment,
-        rating,
-      });
+    const newCommentData: Comment = {
+      id: Date.now().toString(), // Unique ID
+      content: newComment,
+      rating,
+      user_id: user.id,
+      created_at: new Date().toISOString(),
+      user: { username: user.username },
+    };
 
-      if (error) throw error;
+    const updatedComments = [newCommentData, ...comments];
+    setComments(updatedComments);
+    localStorage.setItem(`comments-${recipeId}`, JSON.stringify(updatedComments));
 
-      setNewComment('');
-      setRating(5);
-      loadComments();
-    } catch (error) {
-      console.error('Error posting comment:', error);
-    }
+    setNewComment('');
+    setRating(5);
   };
 
   return (
@@ -78,9 +63,7 @@ const RecipeComments = ({ recipeId }: Props) => {
       {user ? (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Rating
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
             <div className="flex space-x-1">
               {[1, 2, 3, 4, 5].map((value) => (
                 <button
@@ -100,9 +83,7 @@ const RecipeComments = ({ recipeId }: Props) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Your Review
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Your Review</label>
             <textarea
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
@@ -137,9 +118,7 @@ const RecipeComments = ({ recipeId }: Props) => {
             <div key={comment.id} className="bg-white p-6 rounded-lg shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
-                  <span className="font-medium text-gray-800">
-                    {comment.user.username}
-                  </span>
+                  <span className="font-medium text-gray-800">{comment.user.username}</span>
                   <span className="text-gray-500">•</span>
                   <span className="text-gray-500">
                     {new Date(comment.created_at).toLocaleDateString()}
@@ -150,9 +129,7 @@ const RecipeComments = ({ recipeId }: Props) => {
                     <Star
                       key={i}
                       className={`h-5 w-5 ${
-                        i < comment.rating
-                          ? 'text-orange-500 fill-current'
-                          : 'text-gray-300'
+                        i < comment.rating ? 'text-orange-500 fill-current' : 'text-gray-300'
                       }`}
                     />
                   ))}
