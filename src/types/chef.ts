@@ -1,3 +1,5 @@
+import { Recipe } from "./recipe";
+
 export interface Chef {
   id: string;
   username: string;
