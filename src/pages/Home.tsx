@@ -1,100 +1,208 @@
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Clock, Users } from 'lucide-react';
 
 const FEATURED_RECIPES = [
   {
-    id: '1',
+    id: 'butter-chicken',
     title: 'Butter Chicken',
     description: 'Creamy and rich butter chicken made with tender tandoori chicken in a makhani gravy',
     cookingTime: 60,
     servings: 4,
     difficulty: 'medium',
     imageUrl: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    cuisine: 'North Indian'
+    cuisine: 'North Indian',
+    ingredients: [
+      '800g chicken thighs, boneless',
+      '2 cups tomato puree',
+      '1 cup heavy cream',
+      '2 tbsp butter',
+      '2 tbsp oil',
+      '2 onions, finely chopped',
+      '2 tbsp ginger-garlic paste',
+      '2 tbsp tandoori masala',
+      '1 tsp garam masala',
+      'Salt to taste'
+    ],
+    instructions: [
+      'Marinate chicken with tandoori masala for 2 hours',
+      'Cook marinated chicken in oven at 200°C for 20 minutes',
+      'In a pan, sauté onions until golden',
+      'Add ginger-garlic paste and cook for 2 minutes',
+      'Add tomato puree and cook until oil separates',
+      'Add cream, butter, and cooked chicken',
+      'Simmer for 10-15 minutes',
+      'Garnish with cream and serve hot'
+    ]
   },
   {
-    id: '2',
+    id: 'biryani',
     title: 'Hyderabadi Biryani',
     description: 'Authentic Hyderabadi biryani with aromatic basmati rice and tender meat',
     cookingTime: 90,
     servings: 6,
     difficulty: 'hard',
     imageUrl: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    cuisine: 'Hyderabadi'
+    cuisine: 'Hyderabadi',
+    ingredients: [
+      '1 kg basmati rice',
+      '1 kg lamb or chicken',
+      '2 cups yogurt',
+      '4 onions, sliced',
+      'Saffron strands',
+      'Whole spices (cardamom, cinnamon, cloves)',
+      'Ginger-garlic paste',
+      'Mint and coriander leaves',
+      'Ghee',
+      'Salt to taste'
+    ],
+    instructions: [
+      'Marinate meat with yogurt and spices for 4 hours',
+      'Cook rice with whole spices until 70% done',
+      'Layer marinated meat and rice alternately',
+      'Add saffron milk and ghee',
+      'Seal the pot with dough',
+      'Cook on low heat for 45 minutes',
+      'Let it rest for 10 minutes',
+      'Serve hot with raita'
+    ]
   },
   {
-    id: '3',
-    title: 'Masala Dosa',
-    description: 'Crispy rice and lentil crepe filled with spiced potato filling',
-    cookingTime: 45,
-    servings: 4,
-    difficulty: 'medium',
-    imageUrl: 'https://images.unsplash.com/photo-1630383249896-424e482df921?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    cuisine: 'South Indian'
-  },
-  {
-    id: '4',
+    id: 'palak-paneer',
     title: 'Palak Paneer',
-    description: 'Cottage cheese cubes in a creamy spinach gravy',
-    cookingTime: 40,
+    description: 'Creamy spinach curry with fresh cottage cheese cubes, a vegetarian delight',
+    cookingTime: 45,
     servings: 4,
     difficulty: 'easy',
     imageUrl: 'https://images.unsplash.com/photo-1589647363585-f4a7d3877b10?q=80&w=1472&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    cuisine: 'North Indian'
+    cuisine: 'North Indian',
+    ingredients: [
+      '500g spinach leaves',
+      '250g paneer (cottage cheese)',
+      '2 onions, finely chopped',
+      '2 tomatoes, pureed',
+      '4 cloves garlic',
+      '1-inch ginger',
+      '2 green chilies',
+      'Cumin seeds',
+      'Garam masala',
+      'Heavy cream'
+    ],
+    instructions: [
+      'Blanch spinach and blend into a smooth paste',
+      'Pan-fry paneer cubes until golden',
+      'Sauté cumin seeds and garlic in oil',
+      'Add onions and cook until translucent',
+      'Add tomato puree and spices',
+      'Mix in spinach paste and simmer',
+      'Add paneer and cream',
+      'Serve hot with naan bread'
+    ]
   },
   {
-    id: '5',
-    title: 'Chole Bhature',
-    description: 'Spiced chickpea curry served with deep-fried bread',
-    cookingTime: 60,
+    id: 'masala-dosa',
+    title: 'Masala Dosa',
+    description: 'Crispy rice and lentil crepe filled with spiced potato filling, a South Indian classic',
+    cookingTime: 40,
     servings: 4,
     difficulty: 'medium',
-    imageUrl: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    cuisine: 'Punjabi'
+    imageUrl: 'https://images.unsplash.com/photo-1668236543090-82eba5ee5976?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    cuisine: 'South Indian',
+    ingredients: [
+      '2 cups rice',
+      '1 cup urad dal',
+      '4 potatoes',
+      '2 onions',
+      'Mustard seeds',
+      'Curry leaves',
+      'Turmeric powder',
+      'Green chilies',
+      'Ginger',
+      'Oil for cooking'
+    ],
+    instructions: [
+      'Soak rice and dal separately for 6 hours',
+      'Grind into smooth batter and ferment overnight',
+      'Boil and mash potatoes',
+      'Prepare potato filling with spices',
+      'Spread batter on hot griddle in circular motion',
+      'Add oil and cook until crispy',
+      'Place potato filling and fold',
+      'Serve hot with coconut chutney and sambar'
+    ]
   },
   {
-    id: '6',
-    title: 'Mysore Masala Dosa',
-    description: 'Crispy dosa with spicy red chutney and potato filling',
-    cookingTime: 50,
-    servings: 2,
-    difficulty: 'medium',
-    imageUrl: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    cuisine: 'South Indian'
-  },
-  {
-    id: '7',
+    id: 'dal-makhani',
     title: 'Dal Makhani',
-    description: 'Creamy black lentils slow-cooked with butter and spices',
-    cookingTime: 120,
+    description: 'Creamy black lentils slow-cooked overnight with rich spices and butter',
+    cookingTime: 480,
     servings: 6,
     difficulty: 'medium',
     imageUrl: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    cuisine: 'Punjabi'
+    cuisine: 'Punjabi',
+    ingredients: [
+      '1 cup black lentils',
+      '1/4 cup red kidney beans',
+      '1 cup heavy cream',
+      '4 tbsp butter',
+      'Onions and tomatoes',
+      'Ginger-garlic paste',
+      'Whole spices',
+      'Kashmiri red chili powder',
+      'Kasoori methi',
+      'Fresh cream for garnish'
+    ],
+    instructions: [
+      'Soak lentils and beans overnight',
+      'Pressure cook until soft',
+      'Sauté onions and whole spices',
+      'Add tomato puree and spices',
+      'Simmer with lentils for 4-5 hours',
+      'Add cream and butter',
+      'Finish with kasoori methi',
+      'Garnish with cream and serve'
+    ]
   },
   {
-    id: '8',
-    title: 'Vada Pav',
-    description: 'Spiced potato fritter in a bun with chutneys',
-    cookingTime: 45,
-    servings: 4,
-    difficulty: 'easy',
-    imageUrl: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    cuisine: 'Maharashtra'
-  },
-  {
-    id: '9',
-    title: 'Malai Kofta',
-    description: 'Paneer and potato dumplings in rich creamy gravy',
+    id: 'chole-bhature',
+    title: 'Chole Bhature',
+    description: 'Spicy chickpea curry served with deep-fried bread, a popular Punjabi breakfast',
     cookingTime: 60,
     servings: 4,
     difficulty: 'hard',
-    imageUrl: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    cuisine: 'North Indian'
+    imageUrl: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    cuisine: 'Punjabi',
+    ingredients: [
+      '2 cups chickpeas',
+      '2 cups all-purpose flour',
+      'Tea bags for color',
+      'Onions and tomatoes',
+      'Ginger-garlic paste',
+      'Chole masala',
+      'Yeast',
+      'Oil for frying',
+      'Fresh herbs',
+      'Spices blend'
+    ],
+    instructions: [
+      'Soak chickpeas overnight with tea bags',
+      'Pressure cook with spices',
+      'Prepare bhatura dough and let it rise',
+      'Make thick gravy with onions and tomatoes',
+      'Add cooked chickpeas and simmer',
+      'Roll out bhature and deep fry',
+      'Garnish chole with coriander',
+      'Serve hot with onions and pickle'
+    ]
   }
 ];
 
 const Home = () => {
+  useEffect(() => {
+    // Store recipes in localStorage
+    localStorage.setItem('recipes', JSON.stringify(FEATURED_RECIPES));
+  }, []);
+
   return (
     <div className="space-y-12">
       {/* Hero Section */}
@@ -124,18 +232,7 @@ const Home = () => {
 
       {/* Recipe Grid */}
       <section>
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-800">Popular Recipes</h2>
-          <div className="flex space-x-2">
-            <Link
-              to="/chefs"
-              className="bg-orange-100 text-orange-600 px-4 py-2 rounded-lg hover:bg-orange-200 transition-colors"
-            >
-              Explore Chefs
-            </Link>
-          </div>
-        </div>
-        
+        <h2 className="text-3xl font-bold text-gray-800 mb-8">Popular Recipes</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {FEATURED_RECIPES.map((recipe) => (
             <Link
