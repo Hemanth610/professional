@@ -1,23 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
-import { Clock, Users, Camera, Mail, Lock, Bell, Trash2, Eye, LogOut, Video, Plus } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { Clock, Users, Camera, Lock, Bell, Trash2, Eye, LogOut, Video, Plus } from 'lucide-react';
 import type { Recipe } from '../types/recipe';
-
-interface UserProfile {
-  username: string;
-  full_name: string;
-  avatar_url: string;
-  bio: string;
-  email_notifications: boolean;
-  is_public: boolean;
-}
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { user, signOut } = useAuthStore();
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const { user, profile, signOut, updateProfile } = useAuthStore();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
@@ -37,12 +26,7 @@ const Profile = () => {
 
   useEffect(() => {
     if (user) {
-      loadProfile();
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (user) {
+      setLoading(false);
       // Load recipes from local storage
       const recipes = JSON.parse(localStorage.getItem('recipes') || '[]');
       const userRecipes = recipes.filter((recipe: Recipe) => recipe.authorId === user.id);
@@ -50,124 +34,103 @@ const Profile = () => {
     }
   }, [user]);
 
-  const loadProfile = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user?.id)
-        .single();
-
-      if (error) throw error;
-      setProfile(data);
+  useEffect(() => {
+    if (profile) {
       setEditForm({
-        full_name: data.full_name || '',
-        bio: data.bio || '',
-        email_notifications: data.email_notifications || false,
-        is_public: data.is_public !== false
+        full_name: profile.full_name || '',
+        bio: profile.bio || '',
+        email_notifications: profile.email_notifications || false,
+        is_public: profile.is_public !== false
       });
-    } catch (error) {
-      console.error('Error loading profile:', error);
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [profile]);
 
   const handleAvatarChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       const file = event.target.files?.[0];
       if (!file) return;
 
-      const fileExt = file.name.split('.').pop();
-      const filePath = `${user?.id}/avatar.${fileExt}`;
-
-      // Upload image
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, file, { upsert: true });
-
-      if (uploadError) throw uploadError;
-
-      // Get public URL
-      const { data } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(filePath);
-
-      // Update profile
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ avatar_url: data.publicUrl })
-        .eq('id', user?.id);
-
-      if (updateError) throw updateError;
-
-      setProfile(prev => prev ? { ...prev, avatar_url: data.publicUrl } : null);
-      setMessage('Profile picture updated successfully');
+      // Convert file to data URL for local storage
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        try {
+          await updateProfile({ avatar_url: reader.result as string });
+          setMessage('Profile picture updated successfully');
+          setTimeout(() => setMessage(''), 3000);
+        } catch (error) {
+          console.error('Error updating avatar:', error);
+          setMessage('Error updating profile picture');
+          setTimeout(() => setMessage(''), 3000);
+        }
+      };
+      reader.readAsDataURL(file);
     } catch (error) {
-      console.error('Error updating avatar:', error);
+      console.error('Error handling avatar:', error);
       setMessage('Error updating profile picture');
+      setTimeout(() => setMessage(''), 3000);
     }
   };
 
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          full_name: editForm.full_name,
-          bio: editForm.bio,
-          email_notifications: editForm.email_notifications,
-          is_public: editForm.is_public,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', user?.id);
-
-      if (error) throw error;
-
-      setProfile(prev => prev ? { ...prev, ...editForm } : null);
+      await updateProfile({
+        full_name: editForm.full_name,
+        bio: editForm.bio,
+        email_notifications: editForm.email_notifications,
+        is_public: editForm.is_public,
+      });
       setIsEditing(false);
       setMessage('Profile updated successfully');
+      setTimeout(() => setMessage(''), 3000);
     } catch (error) {
       console.error('Error updating profile:', error);
       setMessage('Error updating profile');
+      setTimeout(() => setMessage(''), 3000);
     }
   };
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword
-      });
-
-      if (error) throw error;
-
+      const users = JSON.parse(localStorage.getItem('LOCAL_USERS_KEY') || '{}');
+      if (user?.email) {
+        users[user.email].password = newPassword;
+        localStorage.setItem('LOCAL_USERS_KEY', JSON.stringify(users));
+      }
       setShowPasswordChange(false);
       setCurrentPassword('');
       setNewPassword('');
       setMessage('Password updated successfully');
+      setTimeout(() => setMessage(''), 3000);
     } catch (error) {
       console.error('Error updating password:', error);
       setMessage('Error updating password');
+      setTimeout(() => setMessage(''), 3000);
     }
   };
 
   const handleDeleteAccount = async () => {
     try {
-      // Delete user's profile and auth account
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .delete()
-        .eq('id', user?.id);
-
-      if (profileError) throw profileError;
-
+      if (user) {
+        // Remove user data from all local storage
+        const users = JSON.parse(localStorage.getItem('LOCAL_USERS_KEY') || '{}');
+        if (user.email) {
+          delete users[user.email];
+          localStorage.setItem('LOCAL_USERS_KEY', JSON.stringify(users));
+        }
+        
+        const profiles = JSON.parse(localStorage.getItem('recipe_remix_profiles') || '{}');
+        delete profiles[user.id];
+        localStorage.setItem('recipe_remix_profiles', JSON.stringify(profiles));
+      }
+      
       await signOut();
       navigate('/');
     } catch (error) {
       console.error('Error deleting account:', error);
       setMessage('Error deleting account');
+      setTimeout(() => setMessage(''), 3000);
     }
   };
 
@@ -288,7 +251,18 @@ const Profile = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setIsEditing(false)}
+                    onClick={() => {
+                      setIsEditing(false);
+                      // Reset form to current profile values
+                      if (profile) {
+                        setEditForm({
+                          full_name: profile.full_name || '',
+                          bio: profile.bio || '',
+                          email_notifications: profile.email_notifications || false,
+                          is_public: profile.is_public !== false
+                        });
+                      }
+                    }}
                     className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors"
                   >
                     Cancel
