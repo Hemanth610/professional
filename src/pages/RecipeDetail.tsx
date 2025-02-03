@@ -1,51 +1,73 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Clock, Users, ChefHat, ShoppingCart } from 'lucide-react';
 import BackButton from '../components/BackButton';
 import RecipeComments from '../components/RecipeComments';
 
+interface Recipe {
+  id: string;
+  title: string;
+  description: string;
+  cookingTime: number;
+  servings: number;
+  difficulty: string;
+  imageUrl: string;
+  cuisine: string;
+  ingredients: string[];
+  instructions: string[];
+}
+
 const RecipeDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [showGroceryList, setShowGroceryList] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // TODO: Fetch recipe details from Supabase
-  const recipe = {
-    title: 'Butter Chicken',
-    description: 'Creamy and rich butter chicken made with tender tandoori chicken in a makhani gravy',
-    cookingTime: 60,
-    servings: 4,
-    difficulty: 'medium',
-    imageUrl: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    author: 'Afreen',
-    authorUsername: 'afreen',
-    ingredients: [
-      '800g chicken thighs, boneless',
-      '2 cups tomato puree',
-      '1 cup heavy cream',
-      '2 tbsp butter',
-      '2 tbsp oil',
-      '2 onions, finely chopped',
-      '2 tbsp ginger-garlic paste',
-      '2 tbsp tandoori masala',
-      '1 tsp garam masala',
-      'Salt to taste',
-    ],
-    instructions: [
-      'Marinate chicken with tandoori masala for 2 hours',
-      'Cook marinated chicken in oven at 200°C for 20 minutes',
-      'In a pan, sauté onions until golden',
-      'Add ginger-garlic paste and cook for 2 minutes',
-      'Add tomato puree and cook until oil separates',
-      'Add cream, butter, and cooked chicken',
-      'Simmer for 10-15 minutes',
-      'Garnish with cream and serve hot',
-    ],
-  };
+  useEffect(() => {
+    const loadRecipe = () => {
+      setLoading(true);
+      try {
+        // Get recipes from localStorage
+        const recipes = JSON.parse(localStorage.getItem('recipes') || '[]');
+        const foundRecipe = recipes.find((r: Recipe) => r.id === id);
+        
+        if (foundRecipe) {
+          setRecipe(foundRecipe);
+        } else {
+          // If recipe not found, navigate to home
+          navigate('/');
+        }
+      } catch (error) {
+        console.error('Error loading recipe:', error);
+        navigate('/');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadRecipe();
+  }, [id, navigate]);
 
   const handleBuyGroceries = () => {
     setShowGroceryList(true);
-    // In a real app, this would integrate with a grocery delivery service
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+      </div>
+    );
+  }
+
+  if (!recipe) {
+    return (
+      <div className="text-center py-12">
+        <h2 className="text-2xl font-bold text-gray-800">Recipe not found</h2>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -58,6 +80,9 @@ const RecipeDetail = () => {
             alt={recipe.title}
             className="w-full h-full object-cover"
           />
+          <div className="absolute top-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+            {recipe.cuisine}
+          </div>
         </div>
         <div className="p-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-4">{recipe.title}</h1>
@@ -74,7 +99,7 @@ const RecipeDetail = () => {
             </div>
             <div className="flex items-center space-x-2">
               <ChefHat className="h-6 w-6" />
-              <span>{recipe.author}</span>
+              <span>{recipe.difficulty}</span>
             </div>
           </div>
 
