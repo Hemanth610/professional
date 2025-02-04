@@ -19,7 +19,7 @@ const Auth = () => {
     }
 
     if (isSignUp) {
-      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&])[A-Za-z!@#$%^&*]+$/;
+      const passwordRegex = /^(?=.[a-z])(?=.[A-Z])(?=.[!@#$%^&])[A-Za-z!@#$%^&*]+$/;
       if (!passwordRegex.test(password)) {
         setError('Password must contain at least one uppercase letter, one lowercase letter, and one special character.');
         return false;
@@ -58,15 +58,11 @@ const Auth = () => {
   return (
     <div className="max-w-md mx-auto">
       <div className="relative group perspective-1000">
-        {/* 3D Container with smooth flip animation */}
-        <div
-          className={`transform transition-transform duration-700 ease-in-out ${isSignUp ? 'rotate-y-180' : ''} w-full`}
-        >
-          {/* Main form content with fade-in and slide-up animation */}
-          <div
-            className="bg-white rounded-xl shadow-2xl p-8 transform transition-all duration-500 ease-in-out opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0"
-          >
-            <div className="flex justify-center mb-8 animate_animated animate_fadeIn">
+        {/* 3D Container */}
+        <div className={transform transition-transform duration-700 ${isSignUp ? 'rotate-y-180' : ''} w-full}>
+          {/* Main form content */}
+          <div className="bg-white rounded-xl shadow-2xl p-8 transform transition-all duration-500 ease-in-out group-hover:scale-105">
+            <div className="flex justify-center mb-8">
               <ChefHat className="h-12 w-12 text-orange-500" />
             </div>
 
@@ -82,7 +78,7 @@ const Auth = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 transform hover:scale-105"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300"
                   placeholder="Enter your email"
                 />
               </div>
@@ -94,18 +90,18 @@ const Auth = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 transform hover:scale-105"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300"
                   placeholder="Enter your password"
                 />
               </div>
 
               {error && (
-                <div className="text-red-500 text-sm animate_animated animate_fadeIn">{error}</div>
+                <div className="text-red-500 text-sm">{error}</div>
               )}
 
               <button
                 type="submit"
-                className="w-full bg-orange-500 text-white py-3 px-6 rounded-lg hover:bg-orange-600 transition-colors duration-300 ease-in-out transform hover:scale-105"
+                className="w-full bg-orange-500 text-white py-3 px-6 rounded-lg hover:bg-orange-600 transition-colors duration-300 ease-in-out"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -119,7 +115,7 @@ const Auth = () => {
             <div className="mt-6 text-center">
               <button
                 onClick={() => setIsSignUp(!isSignUp)}
-                className="text-orange-500 hover:text-orange-700 transition-colors duration-300 ease-in-out transform hover:scale-105"
+                className="text-orange-500 hover:text-orange-700 transition-colors duration-300 ease-in-out"
               >
                 {isSignUp
                   ? 'Already have an account? Sign In'
