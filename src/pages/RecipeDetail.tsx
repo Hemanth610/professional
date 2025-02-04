@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Clock, Users, ChefHat, ShoppingCart } from 'lucide-react';
+import { Clock, Users, ChefHat, ShoppingCart as CartIcon } from 'lucide-react';
 import BackButton from '../components/BackButton';
 import RecipeComments from '../components/RecipeComments';
+import ShoppingCart from '../components/ShoppingCart';
+import { useCartStore } from '../store/useCartStore';
+import { formatINR } from '../utils/currency';
 
 interface Recipe {
   id: string;
@@ -17,25 +20,45 @@ interface Recipe {
   instructions: string[];
 }
 
+const INGREDIENT_PRICES: Record<string, { price: number; unit: string }> = {
+  'chicken thighs': { price: 4.99, unit: 'kg' },
+  'tomato puree': { price: 1.99, unit: 'pack' },
+  'heavy cream': { price: 2.99, unit: 'pack' },
+  'butter': { price: 3.49, unit: 'pack' },
+  'onions': { price: 0.99, unit: 'kg' },
+  'ginger-garlic paste': { price: 1.99, unit: 'jar' },
+  'tandoori masala': { price: 2.49, unit: 'pack' },
+  'garam masala': { price: 2.49, unit: 'pack' },
+  'basmati rice': { price: 5.99, unit: 'kg' },
+  'yogurt': { price: 1.99, unit: 'kg' },
+  'saffron': { price: 12.99, unit: 'gram' },
+  'mint': { price: 0.99, unit: 'bunch' },
+  'coriander': { price: 0.99, unit: 'bunch' },
+  'ghee': { price: 6.99, unit: 'kg' },
+  'spinach': { price: 1.99, unit: 'kg' },
+  'paneer': { price: 3.99, unit: 'kg' },
+  'cumin seeds': { price: 1.99, unit: 'pack' },
+  'green chilies': { price: 0.49, unit: 'pack' },
+};
+
 const RecipeDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [recipe, setRecipe] = useState<Recipe | null>(null);
-  const [showGroceryList, setShowGroceryList] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const { addItem, items } = useCartStore();
 
   useEffect(() => {
     const loadRecipe = () => {
       setLoading(true);
       try {
-        // Get recipes from localStorage
         const recipes = JSON.parse(localStorage.getItem('recipes') || '[]');
         const foundRecipe = recipes.find((r: Recipe) => r.id === id);
         
         if (foundRecipe) {
           setRecipe(foundRecipe);
         } else {
-          // If recipe not found, navigate to home
           navigate('/');
         }
       } catch (error) {
@@ -49,8 +72,28 @@ const RecipeDetail = () => {
     loadRecipe();
   }, [id, navigate]);
 
-  const handleBuyGroceries = () => {
-    setShowGroceryList(true);
+  const handleAddToCart = (ingredient: string) => {
+    const normalizedIngredient = Object.keys(INGREDIENT_PRICES).find(
+      (key) => ingredient.toLowerCase().includes(key.toLowerCase())
+    );
+
+    if (normalizedIngredient) {
+      const { price, unit } = INGREDIENT_PRICES[normalizedIngredient];
+      addItem({
+        id: normalizedIngredient,
+        name: ingredient,
+        price,
+        quantity: 1,
+        unit,
+      });
+    }
+  };
+
+  const isInCart = (ingredient: string) => {
+    const normalizedIngredient = Object.keys(INGREDIENT_PRICES).find(
+      (key) => ingredient.toLowerCase().includes(key.toLowerCase())
+    );
+    return items.some((item) => item.id === normalizedIngredient);
   };
 
   if (loading) {
@@ -108,50 +151,43 @@ const RecipeDetail = () => {
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-semibold text-gray-800">Ingredients</h2>
                 <button
-                  onClick={handleBuyGroceries}
-                  className="flex items-center space-x-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
+                  onClick={() => setIsCartOpen(true)}
+                  className="flex items-center space-x-2 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors"
                 >
-                  <ShoppingCart className="h-5 w-5" />
-                  <span>Buy Groceries</span>
+                  <CartIcon className="h-5 w-5" />
+                  <span>View Cart</span>
                 </button>
               </div>
               <ul className="space-y-2">
-                {recipe.ingredients.map((ingredient, index) => (
-                  <li key={index} className="flex items-center space-x-2">
-                    <span className="w-2 h-2 bg-orange-500 rounded-full" />
-                    <span>{ingredient}</span>
-                  </li>
-                ))}
-              </ul>
+                {recipe.ingredients.map((ingredient, index) => {
+                  const normalizedIngredient = Object.keys(INGREDIENT_PRICES).find(
+                    (key) => ingredient.toLowerCase().includes(key.toLowerCase())
+                  );
+                  const price = normalizedIngredient ? INGREDIENT_PRICES[normalizedIngredient].price : null;
 
-              {showGroceryList && (
-                <div className="mt-4 p-4 bg-green-50 rounded-lg">
-                  <h3 className="text-lg font-semibold text-green-800 mb-2">
-                    Grocery List Created!
-                  </h3>
-                  <p className="text-green-700">
-                    Your ingredients have been added to the shopping cart. Choose your preferred grocery delivery service to proceed with the purchase.
-                  </p>
-                  <div className="mt-4 flex space-x-4">
-                    <a
-                      href="https://www.bigbasket.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="bg-white text-green-600 px-4 py-2 rounded border border-green-200 hover:bg-green-50 transition-colors"
-                    >
-                      BigBasket
-                    </a>
-                    <a
-                      href="https://www.grofers.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="bg-white text-green-600 px-4 py-2 rounded border border-green-200 hover:bg-green-50 transition-colors"
-                    >
-                      Grofers
-                    </a>
-                  </div>
-                </div>
-              )}
+                  return (
+                    <li key={index} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-2">
+                        <span className="w-2 h-2 bg-orange-500 rounded-full" />
+                        <span>{ingredient}</span>
+                      </div>
+                      {price && (
+                        <button
+                          onClick={() => handleAddToCart(ingredient)}
+                          disabled={isInCart(ingredient)}
+                          className={`text-sm px-3 py-1 rounded-full transition-colors ${
+                            isInCart(ingredient)
+                              ? 'bg-green-100 text-green-700'
+                              : 'bg-orange-100 text-orange-700 hover:bg-orange-200'
+                          }`}
+                        >
+                          {isInCart(ingredient) ? 'Added' : formatINR(price)}
+                        </button>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
 
             <div>
@@ -172,6 +208,8 @@ const RecipeDetail = () => {
       </div>
 
       <RecipeComments recipeId={id || ''} />
+      
+      <ShoppingCart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </div>
   );
 };

@@ -230,7 +230,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Recipe Grid */}
+      {/* Featured Recipes */}
       <section>
         <h2 className="text-3xl font-bold text-gray-800 mb-8">Popular Recipes</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
