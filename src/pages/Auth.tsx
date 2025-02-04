@@ -19,7 +19,7 @@ const Auth = () => {
     }
 
     if (isSignUp) {
-      const passwordRegex = /^(?=.[a-z])(?=.[A-Z])(?=.[!@#$%^&])[A-Za-z!@#$%^&*]+$/;
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&])[A-Za-z!@#$%^&*]+$/;
       if (!passwordRegex.test(password)) {
         setError('Password must contain at least one uppercase letter, one lowercase letter, and one special character.');
         return false;
@@ -59,7 +59,7 @@ const Auth = () => {
     <div className="max-w-md mx-auto">
       <div className="relative group perspective-1000">
         {/* 3D Container */}
-        <div className={transform transition-transform duration-700 ${isSignUp ? 'rotate-y-180' : ''} w-full}>
+        <div className={`w-full ${isSignUp ? 'rotate-y-180' : ''} transform transition-transform duration-700`}>
           {/* Main form content */}
           <div className="bg-white rounded-xl shadow-2xl p-8 transform transition-all duration-500 ease-in-out group-hover:scale-105">
             <div className="flex justify-center mb-8">
