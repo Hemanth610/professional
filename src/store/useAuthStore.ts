@@ -6,17 +6,29 @@ interface User {
   username: string;
 }
 
+interface UserProfile {
+  id: string;
+  full_name: string;
+  bio: string;
+  avatar_url: string;
+  email_notifications: boolean;
+  is_public: boolean;
+}
+
 interface AuthState {
   user: User | null;
+  profile: UserProfile | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   initialize: () => Promise<void>;
+  updateProfile: (data: Partial<UserProfile>) => Promise<void>;
 }
 
 const LOCAL_STORAGE_KEY = 'recipe_remix_auth';
 const LOCAL_USERS_KEY = 'recipe_remix_users';
+const LOCAL_PROFILES_KEY = 'recipe_remix_profiles';
 
 const saveToLocalStorage = (user: User) => {
   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(user));
@@ -38,14 +50,32 @@ const validateLocalUser = (email: string, password: string) => {
   return users[email]?.password === password ? users[email].id : null;
 };
 
-export const useAuthStore = create<AuthState>((set) => ({
+const getProfileFromLocalStorage = (userId: string): UserProfile | null => {
+  const profiles = JSON.parse(localStorage.getItem(LOCAL_PROFILES_KEY) || '{}');
+  return profiles[userId] || null;
+};
+
+const saveProfileToLocalStorage = (userId: string, profile: Partial<UserProfile>) => {
+  const profiles = JSON.parse(localStorage.getItem(LOCAL_PROFILES_KEY) || '{}');
+  profiles[userId] = {
+    ...profiles[userId],
+    ...profile,
+    id: userId,
+  };
+  localStorage.setItem(LOCAL_PROFILES_KEY, JSON.stringify(profiles));
+  return profiles[userId];
+};
+
+export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
+  profile: null,
   loading: true,
   initialize: async () => {
     try {
       const localUser = getFromLocalStorage();
       if (localUser) {
-        set({ user: localUser });
+        const profile = getProfileFromLocalStorage(localUser.id);
+        set({ user: localUser, profile });
       }
     } catch (error) {
       console.error('Error initializing auth:', error);
@@ -63,7 +93,8 @@ export const useAuthStore = create<AuthState>((set) => ({
           username: email.split('@')[0],
         };
         saveToLocalStorage(user);
-        set({ user });
+        const profile = getProfileFromLocalStorage(userId);
+        set({ user, profile });
         return;
       }
       throw new Error('Invalid email or password');
@@ -73,14 +104,24 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
   signUp: async (email, password) => {
     try {
+      const userId = crypto.randomUUID();
       saveUserToLocalUsers(email, password);
       const user = {
-        id: crypto.randomUUID(),
+        id: userId,
         email,
         username: email.split('@')[0],
       };
       saveToLocalStorage(user);
-      set({ user });
+      // Initialize empty profile
+      const profile = saveProfileToLocalStorage(userId, {
+        id: userId,
+        full_name: '',
+        bio: '',
+        avatar_url: '',
+        email_notifications: false,
+        is_public: true,
+      });
+      set({ user, profile });
     } catch (error: any) {
       throw new Error(error.message || 'Failed to sign up');
     }
@@ -88,9 +129,20 @@ export const useAuthStore = create<AuthState>((set) => ({
   signOut: async () => {
     try {
       localStorage.removeItem(LOCAL_STORAGE_KEY);
-      set({ user: null });
+      set({ user: null, profile: null });
     } catch (error: any) {
       throw new Error(error.message || 'Failed to sign out');
+    }
+  },
+  updateProfile: async (data: Partial<UserProfile>) => {
+    try {
+      const { user } = get();
+      if (!user) throw new Error('No user logged in');
+      
+      const updatedProfile = saveProfileToLocalStorage(user.id, data);
+      set({ profile: updatedProfile });
+    } catch (error: any) {
+      throw new Error(error.message || 'Failed to update profile');
     }
   },
 }));
