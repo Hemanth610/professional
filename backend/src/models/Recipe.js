@@ -1,32 +1,34 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+const mongoose = require('mongoose');
 
-const Recipe = sequelize.define('Recipe', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
-  },
+const recipeSchema = new mongoose.Schema({
   title: {
-    type: DataTypes.STRING,
-    allowNull: false
+    type: String,
+    required: true
   },
-  ingredients: {
-    type: DataTypes.TEXT,
-    allowNull: false
-  },
+  ingredients: [{
+    type: String,
+    required: true
+  }],
   instructions: {
-    type: DataTypes.TEXT,
-    allowNull: false
+    type: String,
+    required: true
   },
-  userId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'Users',
-      key: 'id'
-    }
+  cookingTime: {
+    type: Number,
+    required: true
+  },
+  imageUrl: {
+    type: String
+  },
+  creator: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   }
+}, {
+  timestamps: true
 });
+
+const Recipe = mongoose.model('Recipe', recipeSchema);
 
 module.exports = Recipe;

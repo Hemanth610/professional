@@ -1,5 +1,4 @@
 const Recipe = require('../models/Recipe');
-const db = require('../config/db'); // assuming you have a db config file
 
 exports.createRecipe = async (req, res) => {
   try {
