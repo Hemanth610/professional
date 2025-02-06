@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/auth');
+const { authenticate } = require('../middleware/auth');
 const {
   createRecipe,
   getUserRecipes,
@@ -15,7 +15,7 @@ const {
 router.get('/public', getAllPublicRecipes);
 
 // Protected routes
-router.use(auth);
+router.use(authenticate);
 router.post('/', createRecipe);
 router.get('/', getUserRecipes);
 router.put('/:id', updateRecipe);

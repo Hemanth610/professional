@@ -7,19 +7,19 @@ const recipeRoutes = require('./routes/recipes');
 
 const app = express();
 
-app.use(cors());
+// Middleware
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
 app.use(express.json());
-
-// MongoDB Connection URI
-const MONGODB_URI = 'mongodb+srv://hemanthtempalli8:sTNKOzIFyUOeUgLy@cluster.wf0vf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster';
 
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/recipes', recipeRoutes);
-app.use(cors({
-  origin: 'http://localhost:5173', // or whatever port your Vite frontend runs on
-  credentials: true
-}));
+
+// MongoDB Connection URI
+const MONGODB_URI = process.env.MONGODB_URI;
 
 const PORT = process.env.PORT || 5000;
 

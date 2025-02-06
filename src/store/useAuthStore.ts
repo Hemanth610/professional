@@ -1,5 +1,5 @@
 import create from 'zustand';
-import { authService } from '../services/auth.service';
+import { authService, ProfileUpdateData } from '../services/auth.service';
 
 interface AuthState {
   user: any | null;
@@ -8,6 +8,7 @@ interface AuthState {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => void;
+  updateProfile: (data: ProfileUpdateData) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -31,6 +32,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       throw error;
     }
   },
+
   signUp: async (email: string, password: string) => {
     try {
       const response = await authService.register(email, password);
@@ -41,6 +43,18 @@ export const useAuthStore = create<AuthState>((set) => ({
       throw error;
     }
   },
+
+  updateProfile: async (data: ProfileUpdateData) => {
+    try {
+      const response = await authService.updateProfile(data);
+      const updatedUser = { ...response.user };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      set({ user: updatedUser });
+    } catch (error) {
+      throw error;
+    }
+  },
+
   signOut: () => {
     authService.logout();
     set({ user: null, isAuthenticated: false });

@@ -15,6 +15,26 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true
+  },
+  full_name: {
+    type: String,
+    default: ''
+  },
+  bio: {
+    type: String,
+    default: ''
+  },
+  avatar_url: {
+    type: String,
+    default: ''
+  },
+  email_notifications: {
+    type: Boolean,
+    default: false
+  },
+  is_public: {
+    type: Boolean,
+    default: true
   }
 }, {
   timestamps: true
