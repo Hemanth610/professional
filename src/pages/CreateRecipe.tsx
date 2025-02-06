@@ -5,6 +5,7 @@ import { useAuthStore } from '../store/useAuthStore';
 import { useDropzone } from 'react-dropzone';
 import styled from 'styled-components';
 import VoiceAssistant from '../components/VoiceAssistant';
+import { motion } from 'framer-motion';
 
 interface FileInfo {
     id: string;
@@ -23,8 +24,8 @@ const Container = styled.div`
     max-width: 800px;
     margin: 40px auto;
     padding: 20px;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
+    background-color: #fff3e0; /* Light orange */
+    border: 1px solid #ffcc80; /* Lighter orange */
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 `;
@@ -33,28 +34,29 @@ const Title = styled.h1`
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 10px;
+    color: #e65100; /* Dark orange */
 `;
 
 const UploadSection = styled.div<UploadSectionProps>`
-    background-color: ${props => props.isDragActive ? '#e0e0e0' : '#f0f0f0'};
+    background-color: ${props => props.isDragActive ? '#ffe0b2' : '#fff3e0'}; /* Light orange */
     padding: 20px;
-    border: 1px solid #ddd;
+    border: 1px solid #ffcc80; /* Lighter orange */
     border-radius: 10px;
     cursor: pointer;
     &:hover {
-        background-color: #e0e0e0;
+        background-color: #ffe0b2; /* Light orange */
     }
 `;
 
 const UploadButton = styled.button`
-    background-color: #4CAF50;
+    background-color: #ff9800; /* Orange */
     color: #fff;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     &:hover {
-        background-color: #3e8e41;
+        background-color: #fb8c00; /* Darker orange */
     }
 `;
 
@@ -63,10 +65,10 @@ interface MessageProps {
 }
 
 const Message = styled.div<MessageProps>`
-    background-color: ${(props) => (props.type === 'success' ? '#dff0d8' : '#f2dede')};
-    color: ${(props) => (props.type === 'success' ? '#3c763d' : '#a94442')};
+    background-color: ${(props) => (props.type === 'success' ? '#ffe0b2' : '#ffccbc')}; /* Light orange for success, lighter for error */
+    color: ${(props) => (props.type === 'success' ? '#e65100' : '#c62828')}; /* Dark orange for success, red for error */
     padding: 10px;
-    border: 1px solid ${(props) => (props.type === 'success' ? '#d6e9c6' : '#ebccd1')};
+    border: 1px solid ${(props) => (props.type === 'success' ? '#ffcc80' : '#ef9a9a')}; /* Lighter orange for success, lighter red for error */
     border-radius: 5px;
     margin-bottom: 10px;
 `;
@@ -78,9 +80,9 @@ const FileList = styled.ul`
 `;
 
 const FileItem = styled.li`
-    background-color: #f9f9f9;
+    background-color: #fff3e0; /* Light orange */
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid #ffcc80; /* Lighter orange */
     border-radius: 5px;
     margin-bottom: 10px;
 `;
@@ -99,6 +101,7 @@ const FileIcon = styled.span`
 const FileName = styled.span`
     font-size: 18px;
     font-weight: bold;
+    color: #e65100; /* Dark orange */
 `;
 
 const FileSize = styled.span`
@@ -117,16 +120,16 @@ interface ActionButtonProps {
 }
 
 const ActionButton = styled.button<ActionButtonProps>`
-    background-color: #4CAF50;
+    background-color: #ff9800; /* Orange */
     color: #fff;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     &:hover {
-        background-color: #3e8e41;
+        background-color: #fb8c00; /* Darker orange */
     }
-    ${(props) => props.isDelete && `background-color: #e74c3c; &:hover { background-color: #c0392b; }`}
+    ${(props) => props.isDelete && `background-color: #e74c3c; &:hover { background-color: #c0392b; }`} /* Keep delete button red */
 `;
 
 const PreviewModal = styled.div`
@@ -135,16 +138,16 @@ const PreviewModal = styled.div`
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(255, 165, 0, 0.5); /* Semi-transparent orange */
     display: flex;
     justify-content: center;
     align-items: center;
 `;
 
 const PreviewContent = styled.div`
-    background-color: #f9f9f9;
+    background-color: #fff3e0; /* Light orange */
     padding: 20px;
-    border: 1px solid #ddd;
+    border: 1px solid #ffcc80; /* Lighter orange */
     border-radius: 10px;
     width: 80%;
     max-height: 80%;
@@ -155,14 +158,14 @@ const CloseButton = styled.button`
     position: absolute;
     top: 10px;
     right: 10px;
-    background-color: #4CAF50;
+    background-color: #ff9800; /* Orange */
     color: #fff;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     &:hover {
-        background-color: #3e8e41;
+        background-color: #fb8c00; /* Darker orange */
     }
 `;
 
@@ -171,7 +174,7 @@ const ToggleContainer = styled.div`
     gap: 1rem;
     margin-bottom: 2rem;
     padding: 1rem;
-    background-color: #f8f9fa;
+    background-color: #fff3e0; /* Light orange */
     border-radius: 8px;
 `;
 
@@ -192,7 +195,7 @@ const ToggleButton = styled.button<Pick<ToggleButtonProps, 'active'>>`
     flex: 1;
     
     ${props => props.active ? `
-        background-color: #3498db;
+        background-color: #ff9800; /* Orange */
         color: white;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     ` : `
@@ -201,7 +204,7 @@ const ToggleButton = styled.button<Pick<ToggleButtonProps, 'active'>>`
         border: 1px solid #ddd;
         
         &:hover {
-            background-color: #f0f0f0;
+            background-color: #ffe0b2; /* Light orange */
         }
     `}
 `;
@@ -476,301 +479,325 @@ const CreateRecipe: React.FC = () => {
     return (
         <>
             <VoiceAssistant onTranscript={handleVoiceTranscript} />
-            <Container>
-                <Title>🍳 Create New Recipe</Title>
-                
-                <ToggleContainer>
-                    <ToggleButton 
-                        active={isUploadMode} 
-                        onClick={() => setIsUploadMode(true)}
-                    >
-                        <Upload className="w-5 h-5 mr-2" />
-                        Upload Recipe Document
-                    </ToggleButton>
-                    <ToggleButton 
-                        active={!isUploadMode} 
-                        onClick={() => setIsUploadMode(false)}
-                    >
-                        <Edit className="w-5 h-5 mr-2" />
-                        Create Recipe Manually
-                    </ToggleButton>
-                </ToggleContainer>
+            <motion.div
+                initial={{ opacity: 0, y: -20 }} // Start off-screen
+                animate={{ opacity: 1, y: 0 }} // Animate to on-screen
+                exit={{ opacity: 0, y: -20 }} // Animate off-screen
+                transition={{ duration: 0.8 }} // Increased duration of the animation
+            >
+                <Container>
+                    <Title>🍳 Create New Recipe</Title>
+                    
+                    <ToggleContainer>
+                        <ToggleButton 
+                            active={isUploadMode} 
+                            onClick={() => setIsUploadMode(true)}
+                        >
+                            <Upload className="w-5 h-5 mr-2" />
+                            Upload Recipe Document
+                        </ToggleButton>
+                        <ToggleButton 
+                            active={!isUploadMode} 
+                            onClick={() => setIsUploadMode(false)}
+                        >
+                            <Edit className="w-5 h-5 mr-2" />
+                            Create Recipe Manually
+                        </ToggleButton>
+                    </ToggleContainer>
 
-                {isUploadMode ? (
-                    // Document Upload Section
-                    <>
-                        <UploadSection {...getRootProps()} isDragActive={isDragActive}>
-                            <h2>Upload Recipe Document</h2>
-                            <p>Drag and drop your recipe document here or click to select</p>
-                            <input {...getInputProps()} />
-                            <UploadButton type="button">Choose File</UploadButton>
-                            <p>Supported formats: PDF, DOCX, TXT (Max size: 5MB)</p>
-                        </UploadSection>
+                    {isUploadMode ? (
+                        // Document Upload Section
+                        <motion.div
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8 }} // Increased duration of the animation
+                        >
+                            <UploadSection {...getRootProps()} isDragActive={isDragActive}>
+                                <h2>Upload Recipe Document</h2>
+                                <p>Drag and drop your recipe document here or click to select</p>
+                                <input {...getInputProps()} />
+                                <UploadButton type="button">Choose File</UploadButton>
+                                <p>Supported formats: PDF, DOCX, TXT (Max size: 5MB)</p>
+                            </UploadSection>
 
-                        {message && (
-                            <Message type={message.type}>
-                                {message.text}
-                            </Message>
-                        )}
+                            {message && (
+                                <Message type={message.type}>
+                                    {message.text}
+                                </Message>
+                            )}
 
-                        <h2>Uploaded Documents</h2>
-                        <FileList>
-                            {Array.from(files.values()).map(file => (
-                                <FileItem key={file.id}>
-                                    <FileInfo>
-                                        <FileIcon>{getFileIcon(file.type)}</FileIcon>
-                                        <FileName>{file.name}</FileName>
-                                        <FileSize>{formatFileSize(file.size)}</FileSize>
-                                    </FileInfo>
-                                    <FileActions>
-                                        <ActionButton onClick={() => setPreviewFile(file)}>
-                                            Preview
-                                        </ActionButton>
-                                        <ActionButton onClick={() => deleteFile(file.id)} isDelete>
-                                            Delete
-                                        </ActionButton>
-                                    </FileActions>
-                                </FileItem>
-                            ))}
-                        </FileList>
+                            <h2>Uploaded Documents</h2>
+                            <FileList>
+                                {Array.from(files.values()).map(file => (
+                                    <motion.div
+                                        key={file.id}
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.3 }}
+                                    >
+                                        <FileItem>
+                                            <FileInfo>
+                                                <FileIcon>{getFileIcon(file.type)}</FileIcon>
+                                                <FileName>{file.name}</FileName>
+                                                <FileSize>{formatFileSize(file.size)}</FileSize>
+                                            </FileInfo>
+                                            <FileActions>
+                                                <ActionButton onClick={() => setPreviewFile(file)}>
+                                                    Preview
+                                                </ActionButton>
+                                                <ActionButton onClick={() => deleteFile(file.id)} isDelete>
+                                                    Delete
+                                                </ActionButton>
+                                            </FileActions>
+                                        </FileItem>
+                                    </motion.div>
+                                ))}
+                            </FileList>
 
-                        {previewFile && (
-                            <PreviewModal>
-                                <PreviewContent>
-                                    <CloseButton onClick={() => setPreviewFile(null)}>&times;</CloseButton>
+                            {previewFile && (
+                                <PreviewModal>
+                                    <PreviewContent>
+                                        <CloseButton onClick={() => setPreviewFile(null)}>&times;</CloseButton>
+                                        <div>
+                                            {previewFile.type === 'text/plain' ? (
+                                                <pre>{atob(previewFile.content.split(',')[1])}</pre>
+                                            ) : (
+                                                <div>
+                                                    <p>Preview not available for {previewFile.type} files.</p>
+                                                    <a href={previewFile.content} download={previewFile.name}>
+                                                        Download {previewFile.name}
+                                                    </a>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </PreviewContent>
+                                </PreviewModal>
+                            )}
+                        </motion.div>
+                    ) : (
+                        // Manual Recipe Creation Form
+                        <motion.div
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8 }} // Increased duration of the animation
+                            className="bg-white rounded-xl shadow-lg p-8"
+                        >
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Recipe Title
+                                    </label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={title}
+                                        onChange={(e) => setTitle(e.target.value)}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                        placeholder="Enter recipe title"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Description
+                                    </label>
+                                    <textarea
+                                        required
+                                        value={description}
+                                        onChange={(e) => setDescription(e.target.value)}
+                                        rows={3}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                        placeholder="Describe your recipe"
+                                    />
+                                </div>
+
+                                <div className="grid md:grid-cols-3 gap-4">
                                     <div>
-                                        {previewFile.type === 'text/plain' ? (
-                                            <pre>{atob(previewFile.content.split(',')[1])}</pre>
-                                        ) : (
-                                            <div>
-                                                <p>Preview not available for {previewFile.type} files.</p>
-                                                <a href={previewFile.content} download={previewFile.name}>
-                                                    Download {previewFile.name}
-                                                </a>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Cooking Time (minutes)
+                                        </label>
+                                        <input
+                                            type="number"
+                                            required
+                                            min="1"
+                                            value={cookingTime}
+                                            onChange={(e) => setCookingTime(e.target.value)}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Servings
+                                        </label>
+                                        <input
+                                            type="number"
+                                            required
+                                            min="1"
+                                            value={servings}
+                                            onChange={(e) => setServings(e.target.value)}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Difficulty
+                                        </label>
+                                        <select
+                                            required
+                                            value={difficulty}
+                                            onChange={(e) => setDifficulty(e.target.value)}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                        >
+                                            <option value="easy">Easy</option>
+                                            <option value="medium">Medium</option>
+                                            <option value="hard">Hard</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Ingredients
+                                    </label>
+                                    <div className="space-y-2">
+                                        {ingredients.map((ingredient, index) => (
+                                            <div key={index} className="flex space-x-2">
+                                                <input
+                                                    type="text"
+                                                    value={ingredient}
+                                                    onChange={(e) => updateIngredient(index, e.target.value)}
+                                                    className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                                    placeholder="Enter ingredient"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeIngredient(index)}
+                                                    className="p-2 text-red-500 hover:text-red-700"
+                                                >
+                                                    <Minus className="h-5 w-5" />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={addIngredient}
+                                        className="mt-2 flex items-center space-x-2 text-orange-500 hover:text-orange-700"
+                                    >
+                                        <Plus className="h-5 w-5" />
+                                        <span>Add Ingredient</span>
+                                    </button>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Instructions
+                                    </label>
+                                    <div className="space-y-2">
+                                        {instructions.map((instruction, index) => (
+                                            <div key={index} className="flex space-x-2">
+                                                <textarea
+                                                    value={instruction}
+                                                    onChange={(e) => updateInstruction(index, e.target.value)}
+                                                    rows={2}
+                                                    className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                                    placeholder="Enter instruction step"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeInstruction(index)}
+                                                    className="p-2 text-red-500 hover:text-red-700"
+                                                >
+                                                    <Minus className="h-5 w-5" />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={addInstruction}
+                                        className="mt-2 flex items-center space-x-2 text-orange-500 hover:text-orange-700"
+                                    >
+                                        <Plus className="h-5 w-5" />
+                                        <span>Add Instruction</span>
+                                    </button>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Recipe Image URL
+                                    </label>
+                                    <input
+                                        type="url"
+                                        required
+                                        value={imageUrl}
+                                        onChange={(e) => setImageUrl(e.target.value)}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                        placeholder="Enter image URL"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Recipe Video (Optional)
+                                    </label>
+                                    <div className="space-y-4">
+                                        <div className="flex items-center space-x-4">
+                                            <input
+                                                type="file"
+                                                accept="video/*"
+                                                onChange={handleVideoChange}
+                                                ref={videoInputRef}
+                                                className="hidden"
+                                                id="video-upload"
+                                            />
+                                            <label
+                                                htmlFor="video-upload"
+                                                className="flex items-center space-x-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors"
+                                            >
+                                                <Video className="h-5 w-5" />
+                                                <span>Upload Video</span>
+                                            </label>
+                                            {videoPreviewUrl && (
+                                                <button
+                                                    type="button"
+                                                    onClick={removeVideo}
+                                                    className="text-red-500 hover:text-red-700"
+                                                >
+                                                    <X className="h-5 w-5" />
+                                                </button>
+                                            )}
+                                        </div>
+
+                                        {videoPreviewUrl && (
+                                            <div className="relative rounded-lg overflow-hidden">
+                                                <video
+                                                    src={videoPreviewUrl}
+                                                    controls
+                                                    className="w-full"
+                                                    style={{ maxHeight: '400px' }}
+                                                >
+                                                    Your browser does not support the video tag.
+                                                </video>
                                             </div>
                                         )}
                                     </div>
-                                </PreviewContent>
-                            </PreviewModal>
-                        )}
-                    </>
-                ) : (
-                    // Manual Recipe Creation Form
-                    <div className="bg-white rounded-xl shadow-lg p-8">
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Recipe Title
-                                </label>
-                                <input
-                                    type="text"
-                                    required
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                    placeholder="Enter recipe title"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Description
-                                </label>
-                                <textarea
-                                    required
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                    rows={3}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                    placeholder="Describe your recipe"
-                                />
-                            </div>
-
-                            <div className="grid md:grid-cols-3 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Cooking Time (minutes)
-                                    </label>
-                                    <input
-                                        type="number"
-                                        required
-                                        min="1"
-                                        value={cookingTime}
-                                        onChange={(e) => setCookingTime(e.target.value)}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                    />
                                 </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Servings
-                                    </label>
-                                    <input
-                                        type="number"
-                                        required
-                                        min="1"
-                                        value={servings}
-                                        onChange={(e) => setServings(e.target.value)}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Difficulty
-                                    </label>
-                                    <select
-                                        required
-                                        value={difficulty}
-                                        onChange={(e) => setDifficulty(e.target.value)}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                    >
-                                        <option value="easy">Easy</option>
-                                        <option value="medium">Medium</option>
-                                        <option value="hard">Hard</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Ingredients
-                                </label>
-                                <div className="space-y-2">
-                                    {ingredients.map((ingredient, index) => (
-                                        <div key={index} className="flex space-x-2">
-                                            <input
-                                                type="text"
-                                                value={ingredient}
-                                                onChange={(e) => updateIngredient(index, e.target.value)}
-                                                className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                                placeholder="Enter ingredient"
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() => removeIngredient(index)}
-                                                className="p-2 text-red-500 hover:text-red-700"
-                                            >
-                                                <Minus className="h-5 w-5" />
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
                                 <button
-                                    type="button"
-                                    onClick={addIngredient}
-                                    className="mt-2 flex items-center space-x-2 text-orange-500 hover:text-orange-700"
+                                    type="submit"
+                                    className="w-full bg-orange-500 text-white py-3 px-6 rounded-lg hover:bg-orange-600 transition-colors"
                                 >
-                                    <Plus className="h-5 w-5" />
-                                    <span>Add Ingredient</span>
+                                    Create Recipe
                                 </button>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Instructions
-                                </label>
-                                <div className="space-y-2">
-                                    {instructions.map((instruction, index) => (
-                                        <div key={index} className="flex space-x-2">
-                                            <textarea
-                                                value={instruction}
-                                                onChange={(e) => updateInstruction(index, e.target.value)}
-                                                rows={2}
-                                                className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                                placeholder="Enter instruction step"
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() => removeInstruction(index)}
-                                                className="p-2 text-red-500 hover:text-red-700"
-                                            >
-                                                <Minus className="h-5 w-5" />
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={addInstruction}
-                                    className="mt-2 flex items-center space-x-2 text-orange-500 hover:text-orange-700"
-                                >
-                                    <Plus className="h-5 w-5" />
-                                    <span>Add Instruction</span>
-                                </button>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Recipe Image URL
-                                </label>
-                                <input
-                                    type="url"
-                                    required
-                                    value={imageUrl}
-                                    onChange={(e) => setImageUrl(e.target.value)}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                    placeholder="Enter image URL"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Recipe Video (Optional)
-                                </label>
-                                <div className="space-y-4">
-                                    <div className="flex items-center space-x-4">
-                                        <input
-                                            type="file"
-                                            accept="video/*"
-                                            onChange={handleVideoChange}
-                                            ref={videoInputRef}
-                                            className="hidden"
-                                            id="video-upload"
-                                        />
-                                        <label
-                                            htmlFor="video-upload"
-                                            className="flex items-center space-x-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors"
-                                        >
-                                            <Video className="h-5 w-5" />
-                                            <span>Upload Video</span>
-                                        </label>
-                                        {videoPreviewUrl && (
-                                            <button
-                                                type="button"
-                                                onClick={removeVideo}
-                                                className="text-red-500 hover:text-red-700"
-                                            >
-                                                <X className="h-5 w-5" />
-                                            </button>
-                                        )}
-                                    </div>
-
-                                    {videoPreviewUrl && (
-                                        <div className="relative rounded-lg overflow-hidden">
-                                            <video
-                                                src={videoPreviewUrl}
-                                                controls
-                                                className="w-full"
-                                                style={{ maxHeight: '400px' }}
-                                            >
-                                                Your browser does not support the video tag.
-                                            </video>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            <button
-                                type="submit"
-                                className="w-full bg-orange-500 text-white py-3 px-6 rounded-lg hover:bg-orange-600 transition-colors"
-                            >
-                                Create Recipe
-                            </button>
-                        </form>
-                    </div>
-                )}
-            </Container>
+                            </form>
+                        </motion.div>
+                    )}
+                </Container>
+            </motion.div>
         </>
     );
 };
