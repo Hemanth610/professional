@@ -81,3 +81,38 @@ exports.login = async (req, res) => {
     });
   }
 };
+
+exports.updateProfile = async (req, res) => {
+  try {
+    const { full_name, bio, email_notifications, is_public, avatar_url } = req.body;
+    const user = req.user;
+
+    // Update user profile fields
+    if (full_name) user.full_name = full_name;
+    if (bio) user.bio = bio;
+    if (email_notifications !== undefined) user.email_notifications = email_notifications;
+    if (is_public !== undefined) user.is_public = is_public;
+    if (avatar_url) user.avatar_url = avatar_url;
+
+    await user.save();
+
+    res.json({
+      success: true,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        full_name: user.full_name,
+        bio: user.bio,
+        email_notifications: user.email_notifications,
+        is_public: user.is_public,
+        avatar_url: user.avatar_url
+      }
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+};

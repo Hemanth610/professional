@@ -9,6 +9,14 @@ export interface AuthResponse {
   };
 }
 
+export interface ProfileUpdateData {
+  full_name?: string;
+  bio?: string;
+  email_notifications?: boolean;
+  is_public?: boolean;
+  avatar_url?: string;
+}
+
 export const authService = {
   async login(email: string, password: string): Promise<AuthResponse> {
     const response = await api.post('/auth/login', { email, password });
@@ -22,6 +30,11 @@ export const authService = {
       password,
       username 
     });
+    return response.data;
+  },
+
+  async updateProfile(data: ProfileUpdateData): Promise<any> {
+    const response = await api.put('/auth/profile', data);
     return response.data;
   },
 
