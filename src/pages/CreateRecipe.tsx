@@ -12,7 +12,7 @@ interface FileInfo {
     name: string;
     type: string;
     size: number;
-    lastModified: number;
+    lastModified: number
     content: string;
 }
 
