@@ -25,45 +25,45 @@ const Navbar = () => {
       console.error('Error signing out:', error);
     }
   };
-
   const startVoiceSearch = () => {
     try {
       // Check if the browser supports speech recognition
       if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
-        recognitionRef.current = new SpeechRecognition();
+        const recognition = new SpeechRecognition();
+        recognitionRef.current = recognition;
         
-        recognitionRef.current.continuous = false;
-        recognitionRef.current.interimResults = false;
-        recognitionRef.current.lang = 'en-US';
-
-        recognitionRef.current.onstart = () => {
-          setIsListening(true);
-        };
-
-        recognitionRef.current.onresult = (event) => {
-          const transcript = event.results[0][0].transcript;
-          setSearchQuery(transcript);
-          // Automatically submit the search after voice input
-          navigate(`/search?q=${encodeURIComponent(transcript)}`);
-        };
-
-        recognitionRef.current.onerror = (event) => {
-          console.error('Speech recognition error:', event.error);
-          setIsListening(false);
-        };
-
-        recognitionRef.current.onend = () => {
-          setIsListening(false);
-        };
-
-        recognitionRef.current.start();
+        if (recognitionRef.current) {  // Add this type guard
+          recognitionRef.current.continuous = false;
+          recognitionRef.current.interimResults = false;
+          recognitionRef.current.lang = 'en-US';
+  
+          recognitionRef.current.onstart = () => {
+            setIsListening(true);
+          };
+  
+          recognitionRef.current.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            setSearchQuery(transcript);
+            navigate(`/search?q=${encodeURIComponent(transcript)}`);
+          };
+  
+          recognitionRef.current.onerror = (event) => {
+            console.error('Speech recognition error:', event.error);
+            setIsListening(false);
+          };
+  
+          recognitionRef.current.onend = () => {
+            setIsListening(false);
+          };
+  
+          recognitionRef.current.start();
+        }
       } else {
         alert('Speech recognition is not supported in your browser.');
       }
     } catch (error) {
       console.error('Error starting voice search:', error);
-      setIsListening(false);
     }
   };
 
