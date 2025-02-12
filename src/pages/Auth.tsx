@@ -31,31 +31,30 @@ const Auth = () => {
     return true;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setIsLoading(true);
-
-    if (!validateForm()) {
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      if (isSignUp) {
-        await signUp(email, password);
-        navigate('/home');
-      } else {
-        await signIn(email, password);
-        navigate('/home');
-      }
-    } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'An error occurred');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+ const handleSubmit = async (e: React.FormEvent) => {
+   e.preventDefault();
+   setError('');
+   setIsLoading(true);
+ 
+   if (!validateForm()) {
+     setIsLoading(false);
+     return;
+   }
+ 
+   try {
+     if (isSignUp) {
+       await signUp(email, password);
+       navigate('/');  // Navigation to root path which is home
+     } else {
+       await signIn(email, password);
+       navigate('/');  // Navigation to root path which is home
+     }
+   } catch (err: any) {
+     setError(err.response?.data?.message || err.message || 'An error occurred');
+   } finally {
+     setIsLoading(false);
+   }
+ };
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
